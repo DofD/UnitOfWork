@@ -1,2 +1,12 @@
-/DataAccess/Adapters/DofD.UofW.DataAccess.Adapters.EF/bin/*.*
-
+/DataAccess/Adapters/DofD.UofW.DataAccess.Adapters.EF/bin
+/DataAccess/Adapters/DofD.UofW.DataAccess.Adapters.EF/obj
+/DataAccess/DofD.UofW.DataAccess.Common/bin
+/DataAccess/DofD.UofW.DataAccess.Common/obj
+/Entities/DofD.UofW.Entities.Map.Ef/bin
+/Entities/DofD.UofW.Entities.Map.Ef/obj
+/Entities/DofD.UofW.Entities/bin
+/Entities/DofD.UofW.Entities/obj
+/Tests/DofD.UofW.DataAccess.Adapters.EF.Test/bin
+/Tests/DofD.UofW.DataAccess.Adapters.EF.Test/obj
+/packages
+/UnitOfWork.sln.DotSettings.user
