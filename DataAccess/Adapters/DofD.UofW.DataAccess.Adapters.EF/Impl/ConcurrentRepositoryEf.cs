@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq.Expressions;
 using DofD.UofW.DataAccess.Common.Interface;
 
@@ -24,17 +25,7 @@ namespace DofD.UofW.DataAccess.Adapters.EF.Impl
         /// <param name="unitOfWorkFactory">Фабрика единиц работы</param>
         public ConcurrentRepositoryEf(IUnitOfWorkFactory unitOfWorkFactory)
         {
-            this._unitOfWorkFactory = unitOfWorkFactory;
-        }
-
-        /// <summary>
-        ///     Сохранить изменения
-        /// </summary>
-        /// <param name="unitOfWork">Единица работы</param>
-        internal virtual void CommitChanges(UnitOfWorkEf unitOfWork)
-        {
-            unitOfWork.Commit();
-            unitOfWork.Dispose();
+            _unitOfWorkFactory = unitOfWorkFactory;
         }
 
         /// <summary>
@@ -91,7 +82,8 @@ namespace DofD.UofW.DataAccess.Adapters.EF.Impl
         /// </param>
         /// <param name="includeProperties">Подгружаемые свойства</param>
         /// <returns>Объект из БД</returns>
-        public TEntity Get(TId id, IUnitOfWork unitOfWork = null, params Expression<Func<TEntity, object>>[] includeProperties)
+        public TEntity Get(TId id, IUnitOfWork unitOfWork = null,
+            params Expression<Func<TEntity, object>>[] includeProperties)
         {
             throw new NotImplementedException();
         }
@@ -117,7 +109,8 @@ namespace DofD.UofW.DataAccess.Adapters.EF.Impl
         /// </param>
         /// <param name="includeProperties">Подгружаемые свойства</param>
         /// <returns>Выборка объектов</returns>
-        public IEnumerable<TEntity> GetAll(Expression<Func<TEntity, bool>> @where = null, IUnitOfWork unitOfWork = null, params Expression<Func<TEntity, object>>[] includeProperties)
+        public IEnumerable<TEntity> GetAll(Expression<Func<TEntity, bool>> @where = null, IUnitOfWork unitOfWork = null,
+            params Expression<Func<TEntity, object>>[] includeProperties)
         {
             throw new NotImplementedException();
         }
@@ -128,7 +121,8 @@ namespace DofD.UofW.DataAccess.Adapters.EF.Impl
         /// <param name="where">Условие выбора</param>
         /// <param name="includeProperties">Подгружаемые свойства</param>
         /// <returns>Выборка объектов</returns>
-        public IEnumerable<TEntity> GetAll(Expression<Func<TEntity, bool>> @where, params Expression<Func<TEntity, object>>[] includeProperties)
+        public IEnumerable<TEntity> GetAll(Expression<Func<TEntity, bool>> @where,
+            params Expression<Func<TEntity, object>>[] includeProperties)
         {
             throw new NotImplementedException();
         }
@@ -152,7 +146,8 @@ namespace DofD.UofW.DataAccess.Adapters.EF.Impl
         /// </param>
         /// <param name="includeProperties">Подгружаемые свойства</param>
         /// <returns>Выборка объектов</returns>
-        public IEnumerable<TEntity> GetAll(IUnitOfWork unitOfWork, params Expression<Func<TEntity, object>>[] includeProperties)
+        public IEnumerable<TEntity> GetAll(IUnitOfWork unitOfWork,
+            params Expression<Func<TEntity, object>>[] includeProperties)
         {
             throw new NotImplementedException();
         }
@@ -165,18 +160,19 @@ namespace DofD.UofW.DataAccess.Adapters.EF.Impl
         ///     <remarks>Если репозиторий используется в рамках какой либо единицы иначе null</remarks>
         /// </param>
         /// <param name="entities">Объекты для сохранения</param>
-        public void Save(IUnitOfWork unitOfWork = null, params TEntity[] entities)
+        public void Insert(IUnitOfWork unitOfWork = null, params TEntity[] entities)
         {
-            throw new NotImplementedException();
+            BaseAction((dbSet, entity) => dbSet.Add(entity), unitOfWork, entities);
         }
+
 
         /// <summary>
         ///     Сохранить объект
         /// </summary>
         /// <param name="entities">Объекты для сохранения</param>
-        public void Save(params TEntity[] entities)
+        public void Insert(params TEntity[] entities)
         {
-            throw new NotImplementedException();
+            Insert(null, entities);
         }
 
         /// <summary>
@@ -221,6 +217,46 @@ namespace DofD.UofW.DataAccess.Adapters.EF.Impl
         public void Update(params TEntity[] entities)
         {
             throw new NotImplementedException();
+        }
+
+        /// <summary>
+        ///     Сохранить изменения
+        /// </summary>
+        /// <param name="unitOfWork">Единица работы</param>
+        internal virtual void CommitChanges(UnitOfWorkEf unitOfWork)
+        {
+            unitOfWork.Commit();
+            unitOfWork.Dispose();
+        }
+
+        /// <summary>
+        ///     Базовая функция
+        /// </summary>
+        /// <param name="action">Функция действия</param>
+        /// <param name="unitOfWork">Единица работы</param>
+        /// <param name="entities">Обрабатываемые объекты</param>
+        private void BaseAction(Action<DbSet<TEntity>, TEntity> action, IUnitOfWork unitOfWork = null,
+            params TEntity[] entities)
+        {
+            if (entities == null)
+            {
+                return;
+            }
+
+            var unit = unitOfWork as UnitOfWorkEf;
+
+            var unnerUnitOfWork = unit ?? (UnitOfWorkEf) _unitOfWorkFactory.Create();
+
+            foreach (var entity in entities)
+            {
+                action(unnerUnitOfWork.DbContext.Set<TEntity>(), entity);
+            }
+
+            // Комитим только если использовался внутренний UofW
+            if (unit == null)
+            {
+                CommitChanges(unnerUnitOfWork);
+            }
         }
     }
 }

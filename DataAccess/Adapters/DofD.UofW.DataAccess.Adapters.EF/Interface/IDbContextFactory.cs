@@ -1,7 +1,6 @@
 ﻿using System.Data.Entity;
-using DofD.UofW.DataAccess.Adapters.EF;
 
-namespace DofD.UofW.DataAccess.Common.Interface
+namespace DofD.UofW.DataAccess.Adapters.EF.Interface
 {
     /// <summary>
     ///     Фабрика контекста доступа к данным

@@ -116,13 +116,13 @@ namespace DofD.UofW.DataAccess.Common.Interface
         ///     <remarks>Если репозиторий используется в рамках какой либо единицы иначе null</remarks>
         /// </param>
         /// <param name="entities">Объекты для сохранения</param>
-        void Save(IUnitOfWork unitOfWork = null, params TEntity[] entities);
+        void Insert(IUnitOfWork unitOfWork = null, params TEntity[] entities);
 
         /// <summary>
         ///     Сохранить объект
         /// </summary>
         /// <param name="entities">Объекты для сохранения</param>
-        void Save(params TEntity[] entities);
+        void Insert(params TEntity[] entities);
 
         /// <summary>
         ///     Сохранить или обновить

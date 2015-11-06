@@ -1,5 +1,6 @@
 ﻿using System.Data;
 using System.Data.Entity;
+using DofD.UofW.DataAccess.Adapters.EF.Interface;
 using DofD.UofW.DataAccess.Common.Interface;
 
 namespace DofD.UofW.DataAccess.Adapters.EF.Impl
