@@ -1,6 +1,8 @@
-﻿using System.Data;
+﻿using System;
+using System.Data;
 using System.Data.Entity;
 using DofD.UofW.DataAccess.Adapters.EF.Interface;
+using DofD.UofW.DataAccess.Common.Enum;
 using DofD.UofW.DataAccess.Common.Interface;
 
 namespace DofD.UofW.DataAccess.Adapters.EF.Impl
@@ -31,6 +33,11 @@ namespace DofD.UofW.DataAccess.Adapters.EF.Impl
         private bool _disposed;
 
         /// <summary>
+        ///     Логировщик
+        /// </summary>
+        public event Action<LogLevelMessage, string, Exception> Log;
+
+        /// <summary>
         ///     Инициализирует новый экземпляр класса <see cref="UnitOfWorkEf" />
         /// </summary>
         /// <param name="contextFactory">Фабрика контекста доступа к БД</param>
@@ -42,6 +49,7 @@ namespace DofD.UofW.DataAccess.Adapters.EF.Impl
             _contextFactory = contextFactory;
 
             _context = _contextFactory.CreateDbContext<EntitiesContext>();
+            _context.Log += this.Log;
 
             // Если БД не была создана вызовет ошибку
             _transaction = _context.Database.BeginTransaction(isolationLevel);

@@ -20,26 +20,9 @@ namespace DofD.UofW.DataAccess.Adapters.EF
         private readonly IContextConfig _contextConfig;
 
         /// <summary>
-        ///     Функция лога
-        /// </summary>
-        private Action<LogLevelMessage, string, Exception> _logger;
-
-        /// <summary>
         ///     Логировщик
         /// </summary>
-        public Action<LogLevelMessage, string, Exception> Log
-        {
-            get
-            {
-                var logger = _logger;
-
-                return logger ?? ((level, s, exception) => { });
-            }
-            set
-            {
-                _logger = value;
-            }
-        }
+        public event Action<LogLevelMessage, string, Exception> Log;
 
         /// <summary>
         ///     Инициализирует новый экземпляр класса <see cref="EntitiesContext" />
@@ -55,6 +38,7 @@ namespace DofD.UofW.DataAccess.Adapters.EF
 
             this.Configuration.LazyLoadingEnabled = false;
             this.Configuration.ProxyCreationEnabled = false;
+            this.Log += (message, s, arg3) => { };
 
             if (this._contextConfig.LogSQL)
             {

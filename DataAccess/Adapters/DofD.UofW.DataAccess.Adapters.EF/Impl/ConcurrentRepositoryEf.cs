@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Linq;
 using System.Linq.Expressions;
+using DofD.UofW.DataAccess.Adapters.EF.Extensions;
 using DofD.UofW.DataAccess.Common.Interface;
 
 namespace DofD.UofW.DataAccess.Adapters.EF.Impl
@@ -38,7 +40,24 @@ namespace DofD.UofW.DataAccess.Adapters.EF.Impl
         /// <param name="ids">Идентификаторы</param>
         public void Delete(IUnitOfWork unitOfWork = null, params TId[] ids)
         {
-            throw new NotImplementedException();
+            var unit = unitOfWork as UnitOfWorkEf;
+
+            UnitOfWorkEf innerUnitOfWork = unit ?? (UnitOfWorkEf)_unitOfWorkFactory.Create();
+
+            try
+            {
+                var entityIds = ids.ToList();
+                var entities = this.GetAll(entity => entityIds.Contains(entity.Id), unitOfWork).ToArray();
+
+                this.Delete(unitOfWork, entities);
+            }
+            finally
+            {
+                if (unit == null)
+                {
+                    innerUnitOfWork.Rollback();
+                }
+            }
         }
 
         /// <summary>
@@ -51,7 +70,7 @@ namespace DofD.UofW.DataAccess.Adapters.EF.Impl
         /// <param name="entities">Удаляемые объекты</param>
         public void Delete(IUnitOfWork unitOfWork = null, params TEntity[] entities)
         {
-            throw new NotImplementedException();
+            this.BaseAction((dbSet, entity) => dbSet.Remove(entity), unitOfWork);
         }
 
         /// <summary>
@@ -85,7 +104,13 @@ namespace DofD.UofW.DataAccess.Adapters.EF.Impl
         public TEntity Get(TId id, IUnitOfWork unitOfWork = null,
             params Expression<Func<TEntity, object>>[] includeProperties)
         {
-            throw new NotImplementedException();
+            var predicateId = GetPredicateId(id);
+
+            return BaseActionGet(
+                query => query.SingleOrDefault(),
+                predicateId,
+                unitOfWork,
+                includeProperties);
         }
 
         /// <summary>
@@ -96,7 +121,7 @@ namespace DofD.UofW.DataAccess.Adapters.EF.Impl
         /// <returns>Объект из БД</returns>
         public TEntity Get(TId id, params Expression<Func<TEntity, object>>[] includeProperties)
         {
-            throw new NotImplementedException();
+            return Get(id, null, includeProperties);
         }
 
         /// <summary>
@@ -109,10 +134,10 @@ namespace DofD.UofW.DataAccess.Adapters.EF.Impl
         /// </param>
         /// <param name="includeProperties">Подгружаемые свойства</param>
         /// <returns>Выборка объектов</returns>
-        public IEnumerable<TEntity> GetAll(Expression<Func<TEntity, bool>> @where = null, IUnitOfWork unitOfWork = null,
+        public IEnumerable<TEntity> GetAll(Expression<Func<TEntity, bool>> where = null, IUnitOfWork unitOfWork = null,
             params Expression<Func<TEntity, object>>[] includeProperties)
         {
-            throw new NotImplementedException();
+            return this.BaseActionGet(query => query.ToList(), where, unitOfWork, includeProperties);
         }
 
         /// <summary>
@@ -121,10 +146,10 @@ namespace DofD.UofW.DataAccess.Adapters.EF.Impl
         /// <param name="where">Условие выбора</param>
         /// <param name="includeProperties">Подгружаемые свойства</param>
         /// <returns>Выборка объектов</returns>
-        public IEnumerable<TEntity> GetAll(Expression<Func<TEntity, bool>> @where,
+        public IEnumerable<TEntity> GetAll(Expression<Func<TEntity, bool>> where,
             params Expression<Func<TEntity, object>>[] includeProperties)
         {
-            throw new NotImplementedException();
+            return this.GetAll(where, null, includeProperties);
         }
 
         /// <summary>
@@ -134,7 +159,7 @@ namespace DofD.UofW.DataAccess.Adapters.EF.Impl
         /// <returns>Выборка объектов</returns>
         public IEnumerable<TEntity> GetAll(params Expression<Func<TEntity, object>>[] includeProperties)
         {
-            throw new NotImplementedException();
+            return this.GetAll(null, null, includeProperties);
         }
 
         /// <summary>
@@ -149,7 +174,7 @@ namespace DofD.UofW.DataAccess.Adapters.EF.Impl
         public IEnumerable<TEntity> GetAll(IUnitOfWork unitOfWork,
             params Expression<Func<TEntity, object>>[] includeProperties)
         {
-            throw new NotImplementedException();
+            return this.GetAll(null, unitOfWork, includeProperties);
         }
 
         /// <summary>
@@ -220,6 +245,74 @@ namespace DofD.UofW.DataAccess.Adapters.EF.Impl
         }
 
         /// <summary>
+        ///     Базовый метод для получения сущностей
+        /// </summary>
+        /// <typeparam name="TResult">Тип результата</typeparam>
+        /// <param name="action">Метод действия</param>
+        /// <param name="where">Условие</param>
+        /// <param name="unitOfWork">Единица работы</param>
+        /// <param name="includeProperties">Подгружаемые свойства</param>
+        /// <returns>Результат выполнения метода действия</returns>
+        protected virtual TResult BaseActionGet<TResult>(
+            Func<IQueryable<TEntity>, TResult> action,
+            Expression<Func<TEntity, bool>> where,
+            IUnitOfWork unitOfWork,
+            params Expression<Func<TEntity, object>>[] includeProperties)
+        {
+            var unit = unitOfWork as UnitOfWorkEf;
+
+            UnitOfWorkEf innerUnitOfWork = unit ?? (UnitOfWorkEf)_unitOfWorkFactory.Create();
+
+            try
+            {
+                IQueryable<TEntity> query = AsQueryable(where, innerUnitOfWork, includeProperties);
+
+                return action(query);
+            }
+            finally
+            {
+                if (unit == null)
+                {
+                    innerUnitOfWork.Rollback();
+                }
+            }
+        }
+
+        /// <summary>
+        ///     В виде запроса
+        /// </summary>
+        /// <param name="where">Условие выбора</param>
+        /// <param name="innerUnitOfWork">Единица работы</param>
+        /// <param name="includeProperties">Подгружаемые свойства</param>
+        /// <returns>Выборка сущностей</returns>
+        private static IQueryable<TEntity> AsQueryable(
+            Expression<Func<TEntity, bool>> where,
+            UnitOfWorkEf innerUnitOfWork,
+            params Expression<Func<TEntity, object>>[] includeProperties)
+        {
+            where = where ?? (entity => true);
+
+            return innerUnitOfWork.DbContext.Set<TEntity>().Where(where).PerformInclusions(includeProperties);
+        }
+
+        /// <summary>
+        ///     Получить предикат выбора по идентификатору
+        /// </summary>
+        /// <param name="id">Идентификатор</param>
+        /// <returns>Предикат выбора</returns>
+        private static Expression<Func<TEntity, bool>> GetPredicateId(TId id)
+        {
+            // Предикат: i => i.Id == id, строим вручную чтобы избежать ошибки компиляции "Operator '==' cannot be applied to operands of type 'TId' and 'TId'"
+            ParameterExpression arg = Expression.Parameter(typeof(TEntity), "i");
+            Expression<Func<TEntity, bool>> predicate =
+                Expression.Lambda<Func<TEntity, bool>>(
+                    Expression.Equal(Expression.Property(arg, "Id"), Expression.Constant(id)),
+                    arg);
+
+            return predicate;
+        }
+
+        /// <summary>
         ///     Сохранить изменения
         /// </summary>
         /// <param name="unitOfWork">Единица работы</param>
@@ -235,7 +328,7 @@ namespace DofD.UofW.DataAccess.Adapters.EF.Impl
         /// <param name="action">Функция действия</param>
         /// <param name="unitOfWork">Единица работы</param>
         /// <param name="entities">Обрабатываемые объекты</param>
-        private void BaseAction(Action<DbSet<TEntity>, TEntity> action, IUnitOfWork unitOfWork = null,
+        protected virtual void BaseAction(Action<DbSet<TEntity>, TEntity> action, IUnitOfWork unitOfWork = null,
             params TEntity[] entities)
         {
             if (entities == null)
@@ -245,9 +338,9 @@ namespace DofD.UofW.DataAccess.Adapters.EF.Impl
 
             var unit = unitOfWork as UnitOfWorkEf;
 
-            var unnerUnitOfWork = unit ?? (UnitOfWorkEf) _unitOfWorkFactory.Create();
+            UnitOfWorkEf unnerUnitOfWork = unit ?? (UnitOfWorkEf)_unitOfWorkFactory.Create();
 
-            foreach (var entity in entities)
+            foreach (TEntity entity in entities)
             {
                 action(unnerUnitOfWork.DbContext.Set<TEntity>(), entity);
             }
