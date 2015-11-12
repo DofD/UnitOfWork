@@ -1,6 +1,7 @@
 ﻿using System.Data.Entity;
 using DofD.UofW.DataAccess.Adapters.EF.Interface;
 using DofD.UofW.DataAccess.Common.Interface;
+using NLog;
 
 namespace DofD.UofW.DataAccess.Adapters.EF.Impl
 {
@@ -20,15 +21,24 @@ namespace DofD.UofW.DataAccess.Adapters.EF.Impl
         private readonly IDatabaseInitializer<EntitiesContext> _databaseInitializer;
 
         /// <summary>
+        ///     Логировщик
+        /// </summary>
+        private readonly ILogger _logger;
+
+        /// <summary>
         ///     Инициализирует новый экземпляр класса <see cref="DbContextFactory" />
         /// </summary>
         /// <param name="databaseInitializer">Инициализатор БД</param>
         /// <param name="contextConfig">Конфигурация контекста</param>
+        /// <param name="logger">Логировщик</param>
         public DbContextFactory(
             IDatabaseInitializer<EntitiesContext> databaseInitializer,
-            IContextConfig contextConfig)
+            IContextConfig contextConfig, 
+            ILogger logger)
         {
             this._contextConfig = contextConfig;
+            this._logger = logger;
+
             this._databaseInitializer = databaseInitializer;
         }
 
@@ -48,7 +58,7 @@ namespace DofD.UofW.DataAccess.Adapters.EF.Impl
         /// <returns>Контекст доступа к данным</returns>
         public DbContext CreateDbContext()
         {
-            return new EntitiesContext(this._databaseInitializer, this._contextConfig);
+            return new EntitiesContext(this._databaseInitializer, this._contextConfig, this._logger);
         }
     }
 }

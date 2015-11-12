@@ -19,23 +19,12 @@ namespace DofD.UofW.DataAccess.Adapters.EF.Test
 
         public ConcurrentRepositoryEfTest()
         {
-            Logger logger = LogManager.GetCurrentClassLogger();
+            ILogger logger = LogManager.GetCurrentClassLogger();
 
             IDbContextFactory contextFactory = new DbContextFactory(new DatabaseInitializer<EntitiesContext>(),
-                new TestContextConfig());
+                new TestContextConfig(), logger);
 
             var uofWFactory = new UnitOfWorkFactoryEf(contextFactory);
-            uofWFactory.Log += (level, message, exeption) =>
-            {
-                if (exeption == null)
-                {
-                    logger.Debug(message);
-                }
-                else
-                {
-                    logger.Error(exeption);
-                }
-            };
 
             _repositoryDepartment = new ConcurrentRepositoryEf<Guid, Department>(uofWFactory);
         }
@@ -148,7 +137,7 @@ namespace DofD.UofW.DataAccess.Adapters.EF.Test
 
             var department2 = new Department
             {
-                Id = Guid.NewGuid(),
+                Id = id2,
                 Name = "Для удаления 2",
                 Budget = 15,
                 StartDate = DateTime.Now

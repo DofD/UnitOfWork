@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Data;
 using DofD.UofW.DataAccess.Adapters.EF.Interface;
-using DofD.UofW.DataAccess.Common.Enum;
 using DofD.UofW.DataAccess.Common.Interface;
 
 namespace DofD.UofW.DataAccess.Adapters.EF.Impl
@@ -15,11 +14,6 @@ namespace DofD.UofW.DataAccess.Adapters.EF.Impl
         ///     Фабрика контекста БД
         /// </summary>
         private readonly IDbContextFactory _contextFactory;
-
-        /// <summary>
-        ///     Логировщик
-        /// </summary>
-        public event Action<LogLevelMessage, string, Exception> Log;
 
         /// <summary>
         ///     Инициализирует новый экземпляр класса <see cref="UnitOfWorkFactoryEf" />.
@@ -38,7 +32,6 @@ namespace DofD.UofW.DataAccess.Adapters.EF.Impl
         public IUnitOfWork Create(IsolationLevel isolationLevel)
         {
             var uofw = new UnitOfWorkEf(this._contextFactory, isolationLevel);
-            uofw.Log += this.Log;
 
             return uofw;
         }

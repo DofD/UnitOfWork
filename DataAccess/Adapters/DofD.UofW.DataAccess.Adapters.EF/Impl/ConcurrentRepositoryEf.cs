@@ -31,7 +31,7 @@ namespace DofD.UofW.DataAccess.Adapters.EF.Impl
         }
 
         /// <summary>
-        ///     Удалить объект
+        ///     Удалить объекты
         /// </summary>
         /// <param name="unitOfWork">
         ///     Единица работы
@@ -47,21 +47,21 @@ namespace DofD.UofW.DataAccess.Adapters.EF.Impl
             try
             {
                 var entityIds = ids.ToList();
-                var entities = this.GetAll(entity => entityIds.Contains(entity.Id), unitOfWork).ToArray();
+                var entities = this.GetAll(entity => entityIds.Contains(entity.Id), innerUnitOfWork).ToArray();
 
-                this.Delete(unitOfWork, entities);
+                this.Delete(innerUnitOfWork, entities);
             }
             finally
             {
                 if (unit == null)
                 {
-                    innerUnitOfWork.Rollback();
+                    innerUnitOfWork.Commit();
                 }
             }
         }
 
         /// <summary>
-        ///     Удалить объект
+        ///     Удалить объекты
         /// </summary>
         /// <param name="unitOfWork">
         ///     Единица работы
@@ -70,16 +70,16 @@ namespace DofD.UofW.DataAccess.Adapters.EF.Impl
         /// <param name="entities">Удаляемые объекты</param>
         public void Delete(IUnitOfWork unitOfWork = null, params TEntity[] entities)
         {
-            this.BaseAction((dbSet, entity) => dbSet.Remove(entity), unitOfWork);
+            this.BaseAction((dbSet, entity) => dbSet.Remove(entity), unitOfWork, entities);
         }
 
         /// <summary>
-        ///     Удалить объект
+        ///     Удалить объекты
         /// </summary>
         /// <param name="ids">Идентификаторы</param>
         public void Delete(params TId[] ids)
         {
-            throw new NotImplementedException();
+            this.Delete(null, ids);
         }
 
         /// <summary>
@@ -88,7 +88,7 @@ namespace DofD.UofW.DataAccess.Adapters.EF.Impl
         /// <param name="entities">Удаляемые объекты</param>
         public void Delete(params TEntity[] entities)
         {
-            throw new NotImplementedException();
+            this.Delete(null, entities);
         }
 
         /// <summary>

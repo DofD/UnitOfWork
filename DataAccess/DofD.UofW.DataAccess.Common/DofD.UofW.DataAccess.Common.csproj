@@ -39,7 +39,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Enum\LogLevelMessage.cs" />
     <Compile Include="Helpers\PathExtension.cs" />
     <Compile Include="Interface\IEntityIdentifier.cs" />
     <Compile Include="Impl\BaseEntity.cs" />
@@ -47,6 +46,9 @@
     <Compile Include="Interface\IUnitOfWork.cs" />
     <Compile Include="Interface\IUnitOfWorkFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Enum\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

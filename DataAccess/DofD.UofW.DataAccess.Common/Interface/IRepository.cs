@@ -12,7 +12,7 @@ namespace DofD.UofW.DataAccess.Common.Interface
     public interface IRepository<in TId, TEntity>
     {
         /// <summary>
-        ///     Удалить объект
+        ///     Удалить объекты
         /// </summary>
         /// <param name="unitOfWork">
         ///     Единица работы
@@ -22,7 +22,7 @@ namespace DofD.UofW.DataAccess.Common.Interface
         void Delete(IUnitOfWork unitOfWork = null, params TId[] ids);
 
         /// <summary>
-        ///     Удалить объект
+        ///     Удалить объекты
         /// </summary>
         /// <param name="unitOfWork">
         ///     Единица работы
@@ -32,13 +32,13 @@ namespace DofD.UofW.DataAccess.Common.Interface
         void Delete(IUnitOfWork unitOfWork = null, params TEntity[] entities);
 
         /// <summary>
-        ///     Удалить объект
+        ///     Удалить объекты
         /// </summary>
         /// <param name="ids">Идентификаторы</param>
         void Delete(params TId[] ids);
 
         /// <summary>
-        ///     Удалить объект
+        ///     Удалить объекты
         /// </summary>
         /// <param name="entities">Удаляемые объекты</param>
         void Delete(params TEntity[] entities);
