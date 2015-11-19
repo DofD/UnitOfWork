@@ -10,3 +10,5 @@
 /Tests/DofD.UofW.DataAccess.Adapters.EF.Test/obj
 /packages
 /UnitOfWork.sln.DotSettings.user
+/DataAccess/Adapters/DofD.UofW.DataAccess.Adapters.NH/bin/Debug
+/DataAccess/Adapters/DofD.UofW.DataAccess.Adapters.NH/obj/Debug

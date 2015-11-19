@@ -1,7 +1,7 @@
-﻿using System.Data;
-
-namespace DofD.UofW.DataAccess.Common.Interface
+﻿namespace DofD.UofW.DataAccess.Common.Interface
 {
+    using System.Data;
+
     /// <summary>
     ///     Интерфейс фабрики единицы работы
     /// </summary>

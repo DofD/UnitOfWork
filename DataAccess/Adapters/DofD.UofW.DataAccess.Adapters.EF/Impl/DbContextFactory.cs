@@ -1,10 +1,13 @@
-﻿using System.Data.Entity;
-using DofD.UofW.DataAccess.Adapters.EF.Interface;
-using DofD.UofW.DataAccess.Common.Interface;
-using NLog;
-
-namespace DofD.UofW.DataAccess.Adapters.EF.Impl
+﻿namespace DofD.UofW.DataAccess.Adapters.EF.Impl
 {
+    using System.Data.Entity;
+
+    using Common.Interface;
+
+    using Interface;
+
+    using NLog;
+
     /// <summary>
     ///     Фабрика контекста EF
     /// </summary>
@@ -33,7 +36,7 @@ namespace DofD.UofW.DataAccess.Adapters.EF.Impl
         /// <param name="logger">Логировщик</param>
         public DbContextFactory(
             IDatabaseInitializer<EntitiesContext> databaseInitializer,
-            IContextConfig contextConfig, 
+            IContextConfig contextConfig,
             ILogger logger)
         {
             this._contextConfig = contextConfig;
@@ -49,7 +52,7 @@ namespace DofD.UofW.DataAccess.Adapters.EF.Impl
         /// <returns>Контекст доступа к данным</returns>
         public TDbContext CreateDbContext<TDbContext>() where TDbContext : EntitiesContext
         {
-            return (TDbContext) this.CreateDbContext();
+            return (TDbContext)this.CreateDbContext();
         }
 
         /// <summary>

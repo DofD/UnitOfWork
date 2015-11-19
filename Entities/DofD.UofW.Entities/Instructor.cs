@@ -1,9 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using DofD.UofW.DataAccess.Common.Impl;
-
-namespace DofD.UofW.Entities
+﻿namespace DofD.UofW.Entities
 {
+    using System;
+    using System.Collections.Generic;
+
+    using DataAccess.Common.Impl;
+
     /// <summary>
     ///     Инструктор
     /// </summary>

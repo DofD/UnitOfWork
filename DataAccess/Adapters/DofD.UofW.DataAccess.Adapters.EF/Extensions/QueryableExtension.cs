@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity;
-using System.Linq;
-using System.Linq.Expressions;
-
-namespace DofD.UofW.DataAccess.Adapters.EF.Extensions
+﻿namespace DofD.UofW.DataAccess.Adapters.EF.Extensions
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Data.Entity;
+    using System.Linq;
+    using System.Linq.Expressions;
+
     /// <summary>
     ///     Расширение выборки
     /// </summary>

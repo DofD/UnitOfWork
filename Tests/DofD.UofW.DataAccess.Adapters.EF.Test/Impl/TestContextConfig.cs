@@ -1,7 +1,7 @@
-using DofD.UofW.DataAccess.Common.Interface;
-
 namespace DofD.UofW.DataAccess.Adapters.EF.Test.Impl
 {
+    using Common.Interface;
+
     /// <summary>
     ///     Конфигурация тестового контекста
     /// </summary>
@@ -12,7 +12,10 @@ namespace DofD.UofW.DataAccess.Adapters.EF.Test.Impl
         /// </summary>
         public string CacheKey
         {
-            get { return "UofWTest"; }
+            get
+            {
+                return "UofWTest";
+            }
         }
 
         /// <summary>
@@ -20,7 +23,10 @@ namespace DofD.UofW.DataAccess.Adapters.EF.Test.Impl
         /// </summary>
         public string ConnectionString
         {
-            get { return "TestUnitOfWork"; }
+            get
+            {
+                return "TestUnitOfWork";
+            }
         }
 
         /// <summary>
@@ -28,7 +34,10 @@ namespace DofD.UofW.DataAccess.Adapters.EF.Test.Impl
         /// </summary>
         public string DefaultSchema
         {
-            get { return "Test"; }
+            get
+            {
+                return "Test";
+            }
         }
 
         /// <summary>
@@ -36,7 +45,10 @@ namespace DofD.UofW.DataAccess.Adapters.EF.Test.Impl
         /// </summary>
         public bool LogSQL
         {
-            get { return true; }
+            get
+            {
+                return true;
+            }
         }
 
         /// <summary>
@@ -44,7 +56,10 @@ namespace DofD.UofW.DataAccess.Adapters.EF.Test.Impl
         /// </summary>
         public string[] NamespaceMaps
         {
-            get { return new[] {"DofD.UofW.Entities"}; }
+            get
+            {
+                return new[] { "DofD.UofW.Entities" };
+            }
         }
     }
 }

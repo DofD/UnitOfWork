@@ -1,7 +1,7 @@
-﻿using System.Data.Entity;
-
-namespace DofD.UofW.DataAccess.Adapters.EF.Impl
+﻿namespace DofD.UofW.DataAccess.Adapters.EF.Impl
 {
+    using System.Data.Entity;
+
     /// <summary>
     ///     Инициализатор БД
     /// </summary>

@@ -1,22 +1,21 @@
-﻿namespace DofD.UofW.DataAccess.Adapters.EF.Impl
+﻿namespace DofD.UofW.DataAccess.Adapters.NH.Impl
 {
     using System;
     using System.Collections.Generic;
-    using System.Data.Entity;
-    using System.Data.Entity.Migrations;
     using System.Linq;
     using System.Linq.Expressions;
 
     using Common.Interface;
 
-    using Extensions;
+    using NHibernate;
+    using NHibernate.Linq;
 
     /// <summary>
-    ///     Потокобезопасный репозиторий EF
+    ///     Репозиторий NHibernate
     /// </summary>
     /// <typeparam name="TId">Тип идентификатора</typeparam>
     /// <typeparam name="TEntity">Тип репозитория</typeparam>
-    public class ConcurrentRepositoryEf<TId, TEntity> : IRepository<TId, TEntity>
+    public class RepositoryNh<TId, TEntity> : IRepository<TId, TEntity>
         where TEntity : class, IEntityIdentifier<TId>
     {
         /// <summary>
@@ -25,10 +24,10 @@
         private readonly IUnitOfWorkFactory _unitOfWorkFactory;
 
         /// <summary>
-        ///     Инициализирует новый экземпляр класса <see cref="ConcurrentRepositoryEf{TId, TEntity}" />
+        ///     Инициализирует новый экземпляр класса <see cref="RepositoryNh{TId, TEntity}" />
         /// </summary>
         /// <param name="unitOfWorkFactory">Фабрика единиц работы</param>
-        public ConcurrentRepositoryEf(IUnitOfWorkFactory unitOfWorkFactory)
+        public RepositoryNh(IUnitOfWorkFactory unitOfWorkFactory)
         {
             this._unitOfWorkFactory = unitOfWorkFactory;
         }
@@ -43,9 +42,9 @@
         /// <param name="ids">Идентификаторы</param>
         public void Delete(IUnitOfWork unitOfWork = null, params TId[] ids)
         {
-            var unit = unitOfWork as UnitOfWorkEf;
+            var unit = unitOfWork as UnitOfWorkNh;
 
-            var innerUnitOfWork = unit ?? (UnitOfWorkEf)this._unitOfWorkFactory.Create();
+            var innerUnitOfWork = unit ?? (UnitOfWorkNh)this._unitOfWorkFactory.Create();
 
             try
             {
@@ -73,7 +72,7 @@
         /// <param name="entities">Удаляемые объекты</param>
         public void Delete(IUnitOfWork unitOfWork = null, params TEntity[] entities)
         {
-            this.BaseAction((dbSet, entity) => dbSet.Remove(entity), unitOfWork, entities);
+            this.BaseAction((session, entity) => session.Delete(entity), unitOfWork, entities);
         }
 
         /// <summary>
@@ -86,7 +85,7 @@
         }
 
         /// <summary>
-        ///     Удалить объект
+        ///     Удалить объекты
         /// </summary>
         /// <param name="entities">Удаляемые объекты</param>
         public void Delete(params TEntity[] entities)
@@ -150,7 +149,7 @@
         /// <param name="includeProperties">Подгружаемые свойства</param>
         /// <returns>Выборка объектов</returns>
         public IEnumerable<TEntity> GetAll(
-            Expression<Func<TEntity, bool>> where,
+            Expression<Func<TEntity, bool>> @where,
             params Expression<Func<TEntity, object>>[] includeProperties)
         {
             return this.GetAll(where, null, includeProperties);
@@ -192,7 +191,7 @@
         /// <param name="entities">Объекты для сохранения</param>
         public void Insert(IUnitOfWork unitOfWork = null, params TEntity[] entities)
         {
-            this.BaseAction((dbSet, entity) => dbSet.Add(entity), unitOfWork, entities);
+            this.BaseAction((session, entity) => session.Save(entity), unitOfWork, entities);
         }
 
         /// <summary>
@@ -214,7 +213,7 @@
         /// <param name="entities">Объекты</param>
         public void InsertOrUpdate(IUnitOfWork unitOfWork = null, params TEntity[] entities)
         {
-            this.BaseAction((dbSet, entity) => dbSet.AddOrUpdate(p => p.Id, entity), unitOfWork, entities);
+            this.BaseAction((session, entity) => session.SaveOrUpdate(entity), unitOfWork, entities);
         }
 
         /// <summary>
@@ -236,28 +235,7 @@
         /// <param name="entities">Обновляемый объект</param>
         public void Update(IUnitOfWork unitOfWork = null, params TEntity[] entities)
         {
-            if (entities == null)
-            {
-                return;
-            }
-
-            var unit = unitOfWork as UnitOfWorkEf;
-
-            var unnerUnitOfWork = unit ?? (UnitOfWorkEf)this._unitOfWorkFactory.Create();
-
-            foreach (var entity in entities)
-            {
-                var objectSet = unnerUnitOfWork.DbContext.Set<TEntity>();
-                objectSet.Attach(entity);
-
-                unnerUnitOfWork.DbContext.ChangeObjectState(entity, EntityState.Modified);
-            }
-
-            // Комитим только если использовался внутренний UofW
-            if (unit == null)
-            {
-                this.CommitChanges(unnerUnitOfWork);
-            }
+            this.BaseAction((session, entity) => session.Update(entity), unitOfWork, entities);
         }
 
         /// <summary>
@@ -270,23 +248,13 @@
         }
 
         /// <summary>
-        ///     Сохранить изменения
-        /// </summary>
-        /// <param name="unitOfWork">Единица работы</param>
-        internal virtual void CommitChanges(UnitOfWorkEf unitOfWork)
-        {
-            unitOfWork.Commit();
-            unitOfWork.Dispose();
-        }
-
-        /// <summary>
         ///     Базовая функция
         /// </summary>
         /// <param name="action">Функция действия</param>
         /// <param name="unitOfWork">Единица работы</param>
         /// <param name="entities">Обрабатываемые объекты</param>
         protected virtual void BaseAction(
-            Action<DbSet<TEntity>, TEntity> action,
+            Action<ISession, TEntity> action,
             IUnitOfWork unitOfWork = null,
             params TEntity[] entities)
         {
@@ -295,19 +263,19 @@
                 return;
             }
 
-            var unit = unitOfWork as UnitOfWorkEf;
+            var unit = unitOfWork as UnitOfWorkNh;
 
-            var unnerUnitOfWork = unit ?? (UnitOfWorkEf)this._unitOfWorkFactory.Create();
+            var unnerUnitOfWork = unit ?? (UnitOfWorkNh)this._unitOfWorkFactory.Create();
 
             foreach (var entity in entities)
             {
-                action(unnerUnitOfWork.DbContext.Set<TEntity>(), entity);
+                action(unnerUnitOfWork.Session, entity);
             }
 
             // Комитим только если использовался внутренний UofW
             if (unit == null)
             {
-                this.CommitChanges(unnerUnitOfWork);
+                unnerUnitOfWork.Commit();
             }
         }
 
@@ -326,13 +294,13 @@
             IUnitOfWork unitOfWork,
             params Expression<Func<TEntity, object>>[] includeProperties)
         {
-            var unit = unitOfWork as UnitOfWorkEf;
+            var unit = unitOfWork as UnitOfWorkNh;
 
-            var innerUnitOfWork = unit ?? (UnitOfWorkEf)this._unitOfWorkFactory.Create();
+            var innerUnitOfWork = unit ?? (UnitOfWorkNh)this._unitOfWorkFactory.Create();
 
             try
             {
-                var query = AsQueryable(where, innerUnitOfWork, includeProperties);
+                var query = AsQueryable(where, innerUnitOfWork);
 
                 return action(query);
             }
@@ -350,16 +318,12 @@
         /// </summary>
         /// <param name="where">Условие выбора</param>
         /// <param name="innerUnitOfWork">Единица работы</param>
-        /// <param name="includeProperties">Подгружаемые свойства</param>
         /// <returns>Выборка сущностей</returns>
         private static IQueryable<TEntity> AsQueryable(
             Expression<Func<TEntity, bool>> where,
-            UnitOfWorkEf innerUnitOfWork,
-            params Expression<Func<TEntity, object>>[] includeProperties)
+            UnitOfWorkNh innerUnitOfWork)
         {
-            where = where ?? (entity => true);
-
-            return innerUnitOfWork.DbContext.Set<TEntity>().Where(where).PerformInclusions(includeProperties);
+            return innerUnitOfWork.Session.Query<TEntity>().Where(where);
         }
 
         /// <summary>
@@ -369,7 +333,7 @@
         /// <returns>Предикат выбора</returns>
         private static Expression<Func<TEntity, bool>> GetPredicateId(TId id)
         {
-            // Предикат: i => i.Id == id, строим вручную чтобы избежать ошибки компиляции "Operator '==' cannot be applied to operands of type 'TId' and 'TId'"
+            // Предикат: i => i.Id == id
             var arg = Expression.Parameter(typeof(TEntity), "i");
             var predicate =
                 Expression.Lambda<Func<TEntity, bool>>(

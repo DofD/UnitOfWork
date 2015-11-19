@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq.Expressions;
-
-namespace DofD.UofW.DataAccess.Common.Interface
+﻿namespace DofD.UofW.DataAccess.Common.Interface
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq.Expressions;
+
     /// <summary>
     ///     Репозиторий
     /// </summary>
@@ -132,13 +132,13 @@ namespace DofD.UofW.DataAccess.Common.Interface
         ///     <remarks>Если репозиторий используется в рамках какой либо единицы иначе null</remarks>
         /// </param>
         /// <param name="entities">Объекты</param>
-        void SaveOrUpdate(IUnitOfWork unitOfWork = null, params TEntity[] entities);
+        void InsertOrUpdate(IUnitOfWork unitOfWork = null, params TEntity[] entities);
 
         /// <summary>
         ///     Сохранить или обновить
         /// </summary>
         /// <param name="entities">Объекты</param>
-        void SaveOrUpdate(params TEntity[] entities);
+        void InsertOrUpdate(params TEntity[] entities);
 
         /// <summary>
         ///     Обновить объект

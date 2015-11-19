@@ -1,7 +1,7 @@
-﻿using DofD.UofW.DataAccess.Common.Interface;
-
-namespace DofD.UofW.DataAccess.Common.Impl
+﻿namespace DofD.UofW.DataAccess.Common.Impl
 {
+    using Interface;
+
     /// <summary>
     ///     Базовый класс для всех сущностей
     /// </summary>

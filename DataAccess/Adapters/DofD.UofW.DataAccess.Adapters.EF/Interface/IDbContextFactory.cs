@@ -1,7 +1,7 @@
-﻿using System.Data.Entity;
-
-namespace DofD.UofW.DataAccess.Adapters.EF.Interface
+﻿namespace DofD.UofW.DataAccess.Adapters.EF.Interface
 {
+    using System.Data.Entity;
+
     /// <summary>
     ///     Фабрика контекста доступа к данным
     /// </summary>

@@ -1,10 +1,11 @@
-﻿using System;
-using System.Data;
-using DofD.UofW.DataAccess.Adapters.EF.Interface;
-using DofD.UofW.DataAccess.Common.Interface;
-
-namespace DofD.UofW.DataAccess.Adapters.EF.Impl
+﻿namespace DofD.UofW.DataAccess.Adapters.EF.Impl
 {
+    using System.Data;
+
+    using Common.Interface;
+
+    using Interface;
+
     /// <summary>
     ///     Фабрика единицы работы
     /// </summary>

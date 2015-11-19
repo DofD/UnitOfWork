@@ -1,14 +1,16 @@
-﻿using System;
-using System.Data.Entity;
-using System.Data.Entity.Infrastructure;
-using System.Data.Entity.ModelConfiguration;
-using System.Linq;
-using DofD.UofW.DataAccess.Common.Helpers;
-using DofD.UofW.DataAccess.Common.Interface;
-using NLog;
-
-namespace DofD.UofW.DataAccess.Adapters.EF
+﻿namespace DofD.UofW.DataAccess.Adapters.EF
 {
+    using System;
+    using System.Data.Entity;
+    using System.Data.Entity.Infrastructure;
+    using System.Data.Entity.ModelConfiguration;
+    using System.Linq;
+
+    using Common.Helpers;
+    using Common.Interface;
+
+    using NLog;
+
     /// <summary>
     ///     Контекст БД EF
     /// </summary>
@@ -32,15 +34,16 @@ namespace DofD.UofW.DataAccess.Adapters.EF
         /// <param name="logger">Логировщик</param>
         protected internal EntitiesContext(
             IDatabaseInitializer<EntitiesContext> databaseInitializer,
-            IContextConfig contextConfig, ILogger logger)
+            IContextConfig contextConfig,
+            ILogger logger)
             : base(contextConfig.ConnectionString)
         {
             this._contextConfig = contextConfig;
-            _logger = logger;
+            this._logger = logger;
 
             this.Configuration.LazyLoadingEnabled = false;
             this.Configuration.ProxyCreationEnabled = false;
-            
+
             if (this._contextConfig.LogSQL)
             {
                 this.Database.Log = s => this._logger.Trace(s);
@@ -140,7 +143,7 @@ namespace DofD.UofW.DataAccess.Adapters.EF
                 catch (Exception exception)
                 {
                     logger.Trace("Тип {0} ошибка", type.FullName);
-                    logger.Error( exception);
+                    logger.Error(exception);
                 }
             }
 

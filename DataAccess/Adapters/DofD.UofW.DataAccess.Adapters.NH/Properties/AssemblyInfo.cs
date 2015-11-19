@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 
-[assembly: AssemblyTitle("DofD.UofW.DataAccess.Adapters.EF")]
+[assembly: AssemblyTitle("DofD.UofW.DataAccess.Adapters.NH")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("DofD.UofW.DataAccess.Adapters.EF")]
+[assembly: AssemblyProduct("DofD.UofW.DataAccess.Adapters.NH")]
 [assembly: AssemblyCopyright("Copyright ©  2015")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -22,7 +22,7 @@ using System.Runtime.InteropServices;
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 
-[assembly: Guid("4a6bce04-539f-4ea4-8f3c-9d1f5dee0c89")]
+[assembly: Guid("6945243f-71f8-4bd2-a7a3-e3b66a73e05e")]
 
 // Version information for an assembly consists of the following four values:
 //

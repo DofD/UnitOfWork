@@ -1,7 +1,7 @@
-﻿using System;
-
-namespace DofD.UofW.DataAccess.Common.Interface
+﻿namespace DofD.UofW.DataAccess.Common.Interface
 {
+    using System;
+
     /// <summary>
     ///     Интерфейс единицы работы
     /// </summary>

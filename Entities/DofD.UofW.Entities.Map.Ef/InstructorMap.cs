@@ -1,7 +1,7 @@
-﻿using System.Data.Entity.ModelConfiguration;
-
-namespace DofD.UofW.Entities.Map.Ef
+﻿namespace DofD.UofW.Entities.Map.Ef
 {
+    using System.Data.Entity.ModelConfiguration;
+
     /// <summary>
     ///     Мапинг инструктора
     /// </summary>

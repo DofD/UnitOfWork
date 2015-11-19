@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-
-namespace DofD.UofW.DataAccess.Common.Helpers
+﻿namespace DofD.UofW.DataAccess.Common.Helpers
 {
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Linq;
+    using System.Reflection;
+
     /// <summary>
     ///     Расширение класса Path
     /// </summary>
@@ -22,6 +22,16 @@ namespace DofD.UofW.DataAccess.Common.Helpers
 
                 return GetAssemblyDirectory(assembly);
             }
+        }
+
+        /// <summary>
+        ///     Получить все сборки из директории
+        /// </summary>
+        /// <param name="path">Путь до директории</param>
+        /// <returns>Набор сборок</returns>
+        public static IEnumerable<Assembly> GetAssembly(string path)
+        {
+            return Directory.GetFiles(path, "*.dll").Select(Assembly.LoadFile).ToArray();
         }
 
         /// <summary>
@@ -45,16 +55,6 @@ namespace DofD.UofW.DataAccess.Common.Helpers
             var path = Uri.UnescapeDataString(uri.Path);
 
             return Path.GetDirectoryName(path);
-        }
-
-        /// <summary>
-        ///     Получить все сборки из директории
-        /// </summary>
-        /// <param name="path">Путь до директории</param>
-        /// <returns>Набор сборок</returns>
-        public static IEnumerable<Assembly> GetAssembly(string path)
-        {
-            return Directory.GetFiles(path, "*.dll").Select(Assembly.LoadFile).ToArray();
         }
     }
 }
