@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{FC13304A-6D45-49EF-A9A4-D385524D86BB}</ProjectGuid>
+    <ProjectGuid>{77A48DD9-ABFA-4472-A1D4-ADC88C4BBF6A}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>DofD.UofW.DataAccess.Adapters.NH</RootNamespace>
-    <AssemblyName>DofD.UofW.DataAccess.Adapters.NH</AssemblyName>
+    <RootNamespace>DofD.UofW.Entities.Map.Nh</RootNamespace>
+    <AssemblyName>DofD.UofW.Entities.Map.Nh</AssemblyName>
     <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -31,11 +31,11 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Iesi.Collections, Version=4.0.0.0, Culture=neutral, PublicKeyToken=aa95f207798dfdb4, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\Iesi.Collections.4.0.0.4000\lib\net40\Iesi.Collections.dll</HintPath>
+      <HintPath>..\..\packages\Iesi.Collections.4.0.0.4000\lib\net40\Iesi.Collections.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="NHibernate, Version=4.0.0.4000, Culture=neutral, PublicKeyToken=aa95f207798dfdb4, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\NHibernate.4.0.4.4000\lib\net40\NHibernate.dll</HintPath>
+      <HintPath>..\..\packages\NHibernate.4.0.4.4000\lib\net40\NHibernate.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -47,22 +47,24 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Impl\RepositoryNh.cs" />
-    <Compile Include="Impl\UnitOfWorkFactoryNh.cs" />
-    <Compile Include="Impl\UnitOfWorkNh.cs" />
-    <Compile Include="Interface\INHibernateConfigurer.cs" />
+    <Compile Include="CourseMap.cs" />
+    <Compile Include="DepartmentMap.cs" />
+    <Compile Include="InstructorMap.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\DofD.UofW.DataAccess.Common\DofD.UofW.DataAccess.Common.csproj">
+    <ProjectReference Include="..\..\DataAccess\DofD.UofW.DataAccess.Common\DofD.UofW.DataAccess.Common.csproj">
       <Project>{ECA8B1AA-EBE5-4828-A3DE-42F02A520C55}</Project>
       <Name>DofD.UofW.DataAccess.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DofD.UofW.Entities\DofD.UofW.Entities.csproj">
+      <Project>{6DA8B582-7EA0-41F6-9D13-BA93D0944763}</Project>
+      <Name>DofD.UofW.Entities</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

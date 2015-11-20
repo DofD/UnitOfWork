@@ -7,7 +7,7 @@
     using Interface;
 
     /// <summary>
-    ///     Фабрика единицы работы
+    ///     Фабрика единицы работы EF
     /// </summary>
     public class UnitOfWorkFactoryEf : IUnitOfWorkFactory
     {
@@ -32,9 +32,7 @@
         /// <returns>Единица работы</returns>
         public IUnitOfWork Create(IsolationLevel isolationLevel)
         {
-            var uofw = new UnitOfWorkEf(this._contextFactory, isolationLevel);
-
-            return uofw;
+            return new UnitOfWorkEf(this._contextFactory, isolationLevel);
         }
 
         /// <summary>
