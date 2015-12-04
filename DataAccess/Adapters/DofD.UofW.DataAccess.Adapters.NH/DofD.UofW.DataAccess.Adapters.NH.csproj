@@ -51,6 +51,7 @@
     <Compile Include="Impl\UnitOfWorkFactoryNh.cs" />
     <Compile Include="Impl\UnitOfWorkNh.cs" />
     <Compile Include="Interface\INHibernateConfigurer.cs" />
+    <Compile Include="Impl\NHibernateConfigurer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

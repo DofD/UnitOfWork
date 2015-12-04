@@ -8,6 +8,8 @@
 
     using Impl;
 
+    using Interface;
+
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     using NHibernate;
@@ -19,7 +21,8 @@
 
         public RepositoryNhTest()
         {
-            ISessionFactory sessionFactory;
+            INHibernateConfigurer config = new NHibernateConfigurer() ;
+            var sessionFactory = config.BuildSessionFactory();
             IUnitOfWorkFactory uofWFactory = new UnitOfWorkFactoryNh(sessionFactory);
             this._repositoryDepartment = new RepositoryNh<Guid, Department>(uofWFactory);
         }

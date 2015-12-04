@@ -11,6 +11,6 @@
         ///     Метод создания фабрики сессий
         /// </summary>
         /// <returns>Фабрика сессий</returns>
-        ISessionFactory CreateSessionFactory { get; }
+        ISessionFactory BuildSessionFactory();
     }
 }
